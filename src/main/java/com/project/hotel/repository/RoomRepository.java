@@ -19,6 +19,9 @@ public interface RoomRepository
             double price,
             Pageable pageable
     );
+
+    long countByAvailableTrue();
+
     @Query("""
     SELECT r FROM Room r
     WHERE r.id NOT IN (
@@ -37,6 +40,7 @@ WHERE r.id NOT IN (
 AND (:type IS NULL OR r.type = :type)
 AND (:maxPrice IS NULL OR r.price <= :maxPrice)
 """)
+
     Page<Room> searchAvailableRooms(
             LocalDate checkIn,
             LocalDate checkOut,
