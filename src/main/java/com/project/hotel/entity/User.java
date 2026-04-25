@@ -21,12 +21,10 @@ public class User {
     @Column(unique = true)
     private String email;
 
-    @Column(unique = true)
-    private String username;
-
     private String password;
 
-
+    @OneToMany(mappedBy = "user")
+    private List<Booking> bookings;
 
     public Long getId() {
         return id;
@@ -68,14 +66,4 @@ public class User {
         this.role = role;
     }
 
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    @OneToMany(mappedBy = "user")
-    private List<Booking> bookings;
 }

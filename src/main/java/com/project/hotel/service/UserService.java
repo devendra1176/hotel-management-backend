@@ -36,23 +36,12 @@ public class UserService {
         User user = new User();
         user.setName(dto.getName());
         user.setEmail(dto.getEmail());
-        user.setUsername(dto.getUsername());
 
         // 3. Encode Password
         user.setPassword(passwordEncoder.encode(dto.getPassword()));
 
-        // 4. Set Role (SAFE WAY)
-        Role role;
-        if (dto.getRole() == null) {
-            role = Role.USER; // default role
-        } else {
-            try {
-                role = Role.valueOf(dto.getRole().toUpperCase());
-            } catch (Exception e) {
-                throw new RuntimeException("Invalid role. Use ADMIN or USER");
-            }
-        }
-        user.setRole(role);
+        // 4. ALWAYS SET DEFAULT ROLE (SECURE)
+        user.setRole(Role.USER);
 
         // 5. Save to DB
         User savedUser = userRepository.save(user);

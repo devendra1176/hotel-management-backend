@@ -8,7 +8,6 @@ import lombok.Setter;
 public class BookingResponseDTO {
 
     private Long bookingId;
-    private String userName;
     private String roomNumber;
 
     private String checkIn;
