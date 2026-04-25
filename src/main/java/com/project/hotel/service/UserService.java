@@ -6,6 +6,10 @@ import com.project.hotel.entity.Role;
 import com.project.hotel.entity.User;
 import com.project.hotel.exception.UserNotFoundException;
 import com.project.hotel.repository.UserRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -66,6 +70,19 @@ public class UserService {
 
         // 3. Return full user (for JWT generation)
         return user;
+    }
+
+    // =========================================================
+    // GET ALL USERS
+    // =========================================================
+
+    public Page<UserResponseDTO> getAllUsers(int page, int size, String sortBy) {
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy).ascending());
+
+        Page<User> users = userRepository.findAll(pageable);
+
+        return users.map(this::mapToResponse);
     }
 
     // =========================================================
