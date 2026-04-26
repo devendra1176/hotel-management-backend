@@ -12,6 +12,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -142,6 +147,63 @@ class RoomServiceTest {
         // VERIFY
 
         verify(roomRepository, times(1)).save(any(Room.class));
+    }
+
+    @Test
+    void getAllRooms_shouldReturnPaginatedRoomResponse() {
+
+        // ARRANGE
+
+        int page = 0;
+        int size = 5;
+        String sortBy = "price";
+
+        Room room1 = new Room();
+        room1.setId(1L);
+        room1.setRoomNumber("101");
+        room1.setType(RoomType.DELUXE);
+        room1.setPrice(2500);
+        room1.setAvailable(true);
+
+        Room room2 = new Room();
+        room2.setId(2L);
+        room2.setRoomNumber("102");
+        room2.setType(RoomType.STANDARD);
+        room2.setPrice(1500);
+        room2.setAvailable(true);
+
+        Page<Room> roomPage = new PageImpl<>(
+                List.of(room1, room2),
+                PageRequest.of(page, size),
+                2
+        );
+
+        when(roomRepository.findAll(any(PageRequest.class)))
+                .thenReturn(roomPage);
+
+        // ACT
+
+        Page<RoomResponseDTO> result =
+                roomService.getAllRooms(page, size, sortBy);
+
+        // ASSERT
+
+        assertEquals(2, result.getTotalElements());
+        assertEquals(1, result.getTotalPages());
+        assertEquals(2, result.getContent().size());
+
+        RoomResponseDTO firstRoom = result.getContent().get(0);
+
+        assertEquals(1L, firstRoom.getId());
+        assertEquals("101", firstRoom.getRoomNumber());
+        assertEquals("DELUXE", firstRoom.getType());
+        assertEquals(2500, firstRoom.getPrice());
+        assertTrue(firstRoom.isAvailable());
+
+        // VERIFY
+
+        verify(roomRepository, times(1))
+                .findAll(any(PageRequest.class));
     }
 
 
