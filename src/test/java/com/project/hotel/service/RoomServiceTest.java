@@ -412,4 +412,38 @@ class RoomServiceTest {
                 );
     }
 
+    @Test
+    void searchAdvanced_shouldThrowException_whenRoomTypeIsInvalid() {
+
+        // ARRANGE
+
+        String checkIn = "2026-05-10";
+        String checkOut = "2026-05-12";
+        String type = "KING"; // invalid type
+        Double maxPrice = 3000.0;
+        int page = 0;
+        int size = 5;
+        String sortBy = "price";
+
+        // ACT + ASSERT
+
+        assertThrows(
+                InvalidRoomTypeException.class,
+                () -> roomService.searchAdvanced(
+                        checkIn,
+                        checkOut,
+                        type,
+                        maxPrice,
+                        page,
+                        size,
+                        sortBy
+                )
+        );
+
+        // VERIFY
+
+        verify(roomRepository, never())
+                .searchAvailableRooms(any(), any(), any(), any(), any());
+    }
+
 }
