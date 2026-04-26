@@ -4,6 +4,7 @@ import com.project.hotel.controller.RoomType;
 import com.project.hotel.dto.RoomRequestDTO;
 import com.project.hotel.dto.RoomResponseDTO;
 import com.project.hotel.entity.Room;
+import com.project.hotel.exception.InvalidDateRangeException;
 import com.project.hotel.exception.InvalidRoomTypeException;
 import com.project.hotel.exception.RoomAlreadyExistsException;
 import com.project.hotel.repository.RoomRepository;
@@ -308,6 +309,36 @@ class RoomServiceTest {
                         eq(LocalDate.of(2026, 5, 12)),
                         any(PageRequest.class)
                 );
+    }
+
+    @Test
+    void getAvailableRoomsByDate_shouldThrowException_whenInvalidDateRange() {
+
+        // ARRANGE
+
+        String checkIn = "2026-05-12";
+        String checkOut = "2026-05-10";
+        int page = 0;
+        int size = 5;
+        String sortBy = "price";
+
+        // ACT + ASSERT
+
+        assertThrows(
+                InvalidDateRangeException.class,
+                () -> roomService.getAvailableRoomsByDate(
+                        checkIn,
+                        checkOut,
+                        page,
+                        size,
+                        sortBy
+                )
+        );
+
+        // VERIFY
+
+        verify(roomRepository, never())
+                .findAvailableRoomsByDate(any(), any(), any());
     }
 
 }
