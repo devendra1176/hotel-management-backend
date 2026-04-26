@@ -9,6 +9,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -57,5 +58,15 @@ class RoomControllerSecurityTest {
                 .andExpect(jsonPath("$.data.roomNumber").value("101"));
 
         verify(roomService).createRoom(any());
+    }
+    @Test
+    void deleteRoom_shouldReturnSuccess() throws Exception {
+
+        mockMvc.perform(delete("/rooms/1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value(200))
+                .andExpect(jsonPath("$.message").value("Room deleted"));
+
+        verify(roomService).deleteRoom(1L);
     }
 }
