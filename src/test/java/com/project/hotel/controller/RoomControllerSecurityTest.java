@@ -1,10 +1,18 @@
 package com.project.hotel.controller;
 
+import com.project.hotel.dto.ApiResponse;
 import com.project.hotel.dto.RoomResponseDTO;
 import com.project.hotel.service.RoomService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.test.web.servlet.MockMvc;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -19,11 +27,12 @@ class RoomControllerSecurityTest {
 
     private MockMvc mockMvc;
     private RoomService roomService;
+    private RoomController roomController;
 
     @BeforeEach
     void setUp() {
         roomService = mock(RoomService.class);
-        RoomController roomController = new RoomController(roomService);
+        roomController = new RoomController(roomService);
         mockMvc = standaloneSetup(roomController).build();
     }
 
@@ -59,6 +68,7 @@ class RoomControllerSecurityTest {
 
         verify(roomService).createRoom(any());
     }
+
     @Test
     void deleteRoom_shouldReturnSuccess() throws Exception {
 
@@ -69,4 +79,40 @@ class RoomControllerSecurityTest {
 
         verify(roomService).deleteRoom(1L);
     }
+
+    @Test
+    void getAvailableRoomsByDate_shouldReturnRooms() {
+
+        Page<RoomResponseDTO> page = Page.empty();
+
+        when(roomService.getAvailableRoomsByDate(
+                any(),
+                any(),
+                anyInt(),
+                anyInt(),
+                any()
+        )).thenReturn(page);
+
+        ApiResponse<Page<RoomResponseDTO>> response =
+                roomController.getAvailableRoomsByDate(
+                        "2026-05-10",
+                        "2026-05-12",
+                        0,
+                        5,
+                        "price"
+                );
+
+        assertEquals(200, response.getStatus());
+        assertEquals("Available rooms fetched successfully", response.getMessage());
+        assertNotNull(response.getData());
+
+        verify(roomService).getAvailableRoomsByDate(
+                "2026-05-10",
+                "2026-05-12",
+                0,
+                5,
+                "price"
+        );
+    }
+
 }
