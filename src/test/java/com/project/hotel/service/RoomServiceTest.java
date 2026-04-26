@@ -20,6 +20,7 @@ import org.springframework.data.jpa.domain.Specification;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -478,6 +479,32 @@ class RoomServiceTest {
 
         verify(roomRepository, never())
                 .searchAvailableRooms(any(), any(), any(), any(), any());
+    }
+
+    @Test
+    void deleteRoom_shouldDeleteRoomSuccessfully() {
+
+        // ARRANGE
+
+        Long roomId = 1L;
+
+        Room room = new Room();
+        room.setId(roomId);
+        room.setRoomNumber("501");
+        room.setType(RoomType.DELUXE);
+        room.setPrice(3000);
+        room.setAvailable(true);
+
+        when(roomRepository.findById(roomId))
+                .thenReturn(Optional.of(room));
+
+        // ACT
+
+        roomService.deleteRoom(roomId);
+
+        // ASSERT / VERIFY
+
+        verify(roomRepository, times(1)).delete(room);
     }
 
 }
