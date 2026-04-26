@@ -1,12 +1,14 @@
 package com.project.hotel.controller;
 
 import com.project.hotel.dto.ApiResponse;
+import com.project.hotel.dto.AuthRequest;
 import com.project.hotel.entity.User;
 import com.project.hotel.repository.UserRepository;
 import com.project.hotel.security.JwtUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -35,15 +37,13 @@ public class AuthController {
 
     @Operation(
             summary = "Login user",
-            description = "Authenticates a user using email and password. If credentials are valid, returns a JWT token containing user email and role."
+            description = "Authenticates user using email and password. If credentials are valid, returns JWT token."
     )
     @PostMapping("/login")
-    public ApiResponse<String> login(
-            @Parameter(description = "Registered user email", example = "admin@gmail.com")
-            @RequestParam String email,
+    public ApiResponse<String> login(@Valid @RequestBody AuthRequest request) {
 
-            @Parameter(description = "User password", example = "password123")
-            @RequestParam String password) {
+        String email = request.getEmail();
+        String password = request.getPassword();
 
         log.info("Login attempt started for email={}", email);
 

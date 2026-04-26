@@ -5,14 +5,14 @@ import com.project.hotel.dto.RoomResponseDTO;
 import com.project.hotel.service.RoomService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standaloneSetup;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
+
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import java.util.List;
+
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -21,7 +21,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standaloneSetup;
+
 
 class RoomControllerSecurityTest {
 
@@ -63,7 +63,7 @@ class RoomControllerSecurityTest {
                 )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value(201))
-                .andExpect(jsonPath("$.message").value("Room created"))
+                .andExpect(jsonPath("$.message").value("Room created successfully"))
                 .andExpect(jsonPath("$.data.roomNumber").value("101"));
 
         verify(roomService).createRoom(any());
@@ -75,7 +75,7 @@ class RoomControllerSecurityTest {
         mockMvc.perform(delete("/rooms/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value(200))
-                .andExpect(jsonPath("$.message").value("Room deleted"));
+                .andExpect(jsonPath("$.message").value("Room deleted successfully"));
 
         verify(roomService).deleteRoom(1L);
     }

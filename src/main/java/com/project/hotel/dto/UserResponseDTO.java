@@ -1,13 +1,35 @@
 package com.project.hotel.dto;
 
-import java.security.PrivateKey;
+import io.swagger.v3.oas.annotations.media.Schema;
 
+@Schema(description = "Response DTO containing user details returned by the API")
 public class UserResponseDTO {
+
+    @Schema(
+            description = "Unique user id",
+            example = "1"
+    )
     private Long id;
+
+    @Schema(
+            description = "Full name of the user",
+            example = "Devendra Sahu"
+    )
     private String name;
+
+    @Schema(
+            description = "User email address",
+            example = "devendra@gmail.com"
+    )
     private String email;
+
+    @Schema(
+            description = "User role in the system",
+            example = "USER"
+    )
     private String role;
 
+    // getters & setters
     public Long getId() {
         return id;
     }

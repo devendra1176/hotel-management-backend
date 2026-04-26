@@ -43,7 +43,7 @@ class RoomServiceTest {
         RoomRequestDTO dto = new RoomRequestDTO();
         dto.setRoomNumber("101");
         dto.setType("DELUXE");
-        dto.setPrice(2000);
+        dto.setPrice(2000.00);
 
         when(roomRepository.existsByRoomNumber("101"))
                 .thenReturn(true);
@@ -66,7 +66,7 @@ class RoomServiceTest {
         RoomRequestDTO dto = new RoomRequestDTO();
         dto.setRoomNumber("102");
         dto.setType("DELUXE");
-        dto.setPrice(2500);
+        dto.setPrice(2500.00);
 
         // Fake saved room (DB will return)
         Room savedRoom = new Room();
@@ -103,7 +103,7 @@ class RoomServiceTest {
         RoomRequestDTO dto = new RoomRequestDTO();
         dto.setRoomNumber("103");
         dto.setType("KING"); // invalid type
-        dto.setPrice(3000);
+        dto.setPrice(3000.00);
 
         when(roomRepository.existsByRoomNumber("103"))
                 .thenReturn(false);
@@ -126,7 +126,7 @@ class RoomServiceTest {
         RoomRequestDTO dto = new RoomRequestDTO();
         dto.setRoomNumber("104");
         dto.setType("DELUXE");
-        dto.setPrice(2500);
+        dto.setPrice(2500.00);
 
         when(roomRepository.existsByRoomNumber("104"))
                 .thenReturn(false);
