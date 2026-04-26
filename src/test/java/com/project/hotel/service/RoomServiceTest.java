@@ -15,6 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 
 import java.util.List;
 
@@ -206,5 +207,42 @@ class RoomServiceTest {
                 .findAll(any(PageRequest.class));
     }
 
+    @Test
+    void searchRoomsDynamic_shouldFilterByTypeMaxPriceAndAvailability() {
+
+        // ARRANGE
+
+        Room room = new Room();
+        room.setId(1L);
+        room.setRoomNumber("201");
+        room.setType(RoomType.DELUXE);
+        room.setPrice(2800);
+        room.setAvailable(true);
+
+        when(roomRepository.findAll(any(Specification.class)))
+                .thenReturn(List.of(room));
+
+        // ACT
+
+        List<RoomResponseDTO> result =
+                roomService.searchRoomsDynamic("DELUXE", 3000.0, true);
+
+        // ASSERT
+
+        assertEquals(1, result.size());
+
+        RoomResponseDTO dto = result.get(0);
+
+        assertEquals(1L, dto.getId());
+        assertEquals("201", dto.getRoomNumber());
+        assertEquals("DELUXE", dto.getType());
+        assertEquals(2800, dto.getPrice());
+        assertTrue(dto.isAvailable());
+
+        // VERIFY
+
+        verify(roomRepository, times(1))
+                .findAll(any(Specification.class));
+    }
 
 }
