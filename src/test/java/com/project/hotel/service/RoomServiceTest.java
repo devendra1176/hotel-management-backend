@@ -17,6 +17,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -243,6 +244,70 @@ class RoomServiceTest {
 
         verify(roomRepository, times(1))
                 .findAll(any(Specification.class));
+    }
+
+    @Test
+    void getAvailableRoomsByDate_shouldReturnAvailableRoomsForDateRange() {
+
+        // ARRANGE
+
+        String checkIn = "2026-05-10";
+        String checkOut = "2026-05-12";
+        int page = 0;
+        int size = 5;
+        String sortBy = "price";
+
+        Room room = new Room();
+        room.setId(1L);
+        room.setRoomNumber("301");
+        room.setType(RoomType.DELUXE);
+        room.setPrice(3000);
+        room.setAvailable(true);
+
+        Page<Room> roomPage = new PageImpl<>(
+                List.of(room),
+                PageRequest.of(page, size),
+                1
+        );
+
+        when(roomRepository.findAvailableRoomsByDate(
+                eq(LocalDate.of(2026, 5, 10)),
+                eq(LocalDate.of(2026, 5, 12)),
+                any(PageRequest.class)
+        )).thenReturn(roomPage);
+
+        // ACT
+
+        Page<RoomResponseDTO> result =
+                roomService.getAvailableRoomsByDate(
+                        checkIn,
+                        checkOut,
+                        page,
+                        size,
+                        sortBy
+                );
+
+        // ASSERT
+
+        assertEquals(1, result.getTotalElements());
+        assertEquals(1, result.getContent().size());
+
+        RoomResponseDTO dto = result.getContent().get(0);
+
+        assertEquals(1L, dto.getId());
+        assertEquals("301", dto.getRoomNumber());
+        assertEquals("DELUXE", dto.getType());
+        assertEquals(3000, dto.getPrice());
+        assertTrue(dto.isAvailable());
+
+        // VERIFY
+
+        verify(roomRepository, times(1))
+                .findAvailableRoomsByDate(
+                        eq(LocalDate.of(2026, 5, 10)),
+                        eq(LocalDate.of(2026, 5, 12)),
+                        any(PageRequest.class)
+                );
     }
 
 }
