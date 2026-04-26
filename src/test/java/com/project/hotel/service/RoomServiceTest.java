@@ -13,8 +13,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -107,6 +106,42 @@ class RoomServiceTest {
 
         // VERIFY
         verify(roomRepository, never()).save(any());
+    }
+
+    @Test
+    void createRoom_shouldSetAvailableTrueByDefault() {
+
+        // ARRANGE
+
+        RoomRequestDTO dto = new RoomRequestDTO();
+        dto.setRoomNumber("104");
+        dto.setType("DELUXE");
+        dto.setPrice(2500);
+
+        when(roomRepository.existsByRoomNumber("104"))
+                .thenReturn(false);
+
+        Room savedRoom = new Room();
+        savedRoom.setId(1L);
+        savedRoom.setRoomNumber("104");
+        savedRoom.setType(RoomType.DELUXE);
+        savedRoom.setPrice(2500);
+        savedRoom.setAvailable(true); // expected
+
+        when(roomRepository.save(any(Room.class)))
+                .thenReturn(savedRoom);
+
+        // ACT
+
+        RoomResponseDTO result = roomService.createRoom(dto);
+
+        // ASSERT
+
+        assertTrue(result.isAvailable());
+
+        // VERIFY
+
+        verify(roomRepository, times(1)).save(any(Room.class));
     }
 
 
