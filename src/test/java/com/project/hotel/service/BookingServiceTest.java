@@ -248,4 +248,45 @@ public class BookingServiceTest {
 
         verify(bookingRepository, never()).delete(any());
     }
+
+    @Test
+    void cancelBooking_shouldAllowAdmin() {
+
+        // ARRANGE
+
+        String adminEmail = "admin@mail.com";
+
+        User owner = new User();
+        owner.setId(1L);
+        owner.setEmail("owner@mail.com");
+        owner.setRole(Role.USER);
+
+        User admin = new User();
+        admin.setId(2L);
+        admin.setEmail(adminEmail);
+        admin.setRole(Role.ADMIN); // important
+
+        Room room = new Room();
+        room.setId(1L);
+        room.setRoomNumber("101");
+
+        Booking booking = new Booking();
+        booking.setId(10L);
+        booking.setUser(owner); // booking belongs to someone else
+        booking.setRoom(room);
+
+        when(bookingRepository.findById(10L))
+                .thenReturn(Optional.of(booking));
+
+        when(userRepository.findByEmail(adminEmail))
+                .thenReturn(Optional.of(admin));
+
+        // ACT
+
+        bookingService.cancelBooking(10L, adminEmail);
+
+        // VERIFY
+
+        verify(bookingRepository, times(1)).delete(booking);
+    }
 }
