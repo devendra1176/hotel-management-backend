@@ -341,4 +341,75 @@ class RoomServiceTest {
                 .findAvailableRoomsByDate(any(), any(), any());
     }
 
+    @Test
+    void searchAdvanced_shouldReturnFilteredAvailableRooms() {
+
+        // ARRANGE
+
+        String checkIn = "2026-05-10";
+        String checkOut = "2026-05-12";
+        String type = "DELUXE";
+        Double maxPrice = 3000.0;
+        int page = 0;
+        int size = 5;
+        String sortBy = "price";
+
+        Room room = new Room();
+        room.setId(1L);
+        room.setRoomNumber("401");
+        room.setType(RoomType.DELUXE);
+        room.setPrice(2800);
+        room.setAvailable(true);
+
+        Page<Room> roomPage = new PageImpl<>(
+                List.of(room),
+                PageRequest.of(page, size),
+                1
+        );
+
+        when(roomRepository.searchAvailableRooms(
+                eq(LocalDate.of(2026, 5, 10)),
+                eq(LocalDate.of(2026, 5, 12)),
+                eq(RoomType.DELUXE),
+                eq(maxPrice),
+                any(PageRequest.class)
+        )).thenReturn(roomPage);
+
+        // ACT
+
+        Page<RoomResponseDTO> result =
+                roomService.searchAdvanced(
+                        checkIn,
+                        checkOut,
+                        type,
+                        maxPrice,
+                        page,
+                        size,
+                        sortBy
+                );
+
+        // ASSERT
+
+        assertEquals(1, result.getTotalElements());
+
+        RoomResponseDTO dto = result.getContent().get(0);
+
+        assertEquals(1L, dto.getId());
+        assertEquals("401", dto.getRoomNumber());
+        assertEquals("DELUXE", dto.getType());
+        assertEquals(2800, dto.getPrice());
+        assertTrue(dto.isAvailable());
+
+        // VERIFY
+
+        verify(roomRepository, times(1))
+                .searchAvailableRooms(
+                        eq(LocalDate.of(2026, 5, 10)),
+                        eq(LocalDate.of(2026, 5, 12)),
+                        eq(RoomType.DELUXE),
+                        eq(maxPrice),
+                        any(PageRequest.class)
+                );
+    }
+
 }
