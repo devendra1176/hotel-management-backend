@@ -203,4 +203,49 @@ public class BookingServiceTest {
 
         verify(bookingRepository, times(1)).delete(booking);
     }
+
+    @Test
+    void cancelBooking_shouldRejectNonOwner() {
+
+        // ARRANGE
+
+        String ownerEmail = "owner@mail.com";
+        String otherUserEmail = "other@mail.com";
+
+        User owner = new User();
+        owner.setId(1L);
+        owner.setEmail(ownerEmail);
+        owner.setRole(Role.USER);
+
+        User otherUser = new User();
+        otherUser.setId(2L);
+        otherUser.setEmail(otherUserEmail);
+        otherUser.setRole(Role.USER);
+
+        Room room = new Room();
+        room.setId(1L);
+        room.setRoomNumber("101");
+
+        Booking booking = new Booking();
+        booking.setId(10L);
+        booking.setUser(owner); // 👈 booking owner
+        booking.setRoom(room);
+
+        when(bookingRepository.findById(10L))
+                .thenReturn(Optional.of(booking));
+
+        when(userRepository.findByEmail(otherUserEmail))
+                .thenReturn(Optional.of(otherUser));
+
+        // ACT + ASSERT
+
+        assertThrows(
+                RuntimeException.class,
+                () -> bookingService.cancelBooking(10L, otherUserEmail)
+        );
+
+        // VERIFY
+
+        verify(bookingRepository, never()).delete(any());
+    }
 }
