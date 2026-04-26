@@ -141,4 +141,30 @@ public class BookingServiceTest {
 
         verify(bookingRepository, times(1)).save(any(Booking.class));
     }
+
+    @Test
+    void createBooking_shouldThrowException_whenCheckOutBeforeCheckIn() {
+
+        // ARRANGE
+
+        String email = "dev@mail.com";
+
+        BookingRequestDTO dto = new BookingRequestDTO();
+        dto.setRoomId(1L);
+        dto.setCheckIn(LocalDate.of(2026, 4, 30));
+        dto.setCheckOut(LocalDate.of(2026, 4, 28)); //wrong
+
+        // ACT + ASSERT
+
+        assertThrows(
+                RuntimeException.class,
+                () -> bookingService.createBooking(dto, email)
+        );
+
+        // VERIFY
+
+        verify(userRepository, never()).findByEmail(any());
+        verify(roomRepository, never()).findById(any());
+        verify(bookingRepository, never()).save(any());
+    }
 }
