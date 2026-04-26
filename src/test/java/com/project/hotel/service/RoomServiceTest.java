@@ -446,4 +446,38 @@ class RoomServiceTest {
                 .searchAvailableRooms(any(), any(), any(), any(), any());
     }
 
+    @Test
+    void searchAdvanced_shouldThrowException_whenInvalidDateRange() {
+
+        // ARRANGE
+
+        String checkIn = "2026-05-12";
+        String checkOut = "2026-05-10"; // invalid
+        String type = "DELUXE";
+        Double maxPrice = 3000.0;
+        int page = 0;
+        int size = 5;
+        String sortBy = "price";
+
+        // ACT + ASSERT
+
+        assertThrows(
+                InvalidDateRangeException.class,
+                () -> roomService.searchAdvanced(
+                        checkIn,
+                        checkOut,
+                        type,
+                        maxPrice,
+                        page,
+                        size,
+                        sortBy
+                )
+        );
+
+        // VERIFY
+
+        verify(roomRepository, never())
+                .searchAvailableRooms(any(), any(), any(), any(), any());
+    }
+
 }
