@@ -7,6 +7,7 @@ import com.project.hotel.entity.Room;
 import com.project.hotel.exception.InvalidDateRangeException;
 import com.project.hotel.exception.InvalidRoomTypeException;
 import com.project.hotel.exception.RoomAlreadyExistsException;
+import com.project.hotel.exception.RoomNotFoundException;
 import com.project.hotel.repository.RoomRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -505,6 +506,28 @@ class RoomServiceTest {
         // ASSERT / VERIFY
 
         verify(roomRepository, times(1)).delete(room);
+    }
+
+    @Test
+    void deleteRoom_shouldThrowException_whenRoomNotFound() {
+
+        // ARRANGE
+
+        Long roomId = 99L;
+
+        when(roomRepository.findById(roomId))
+                .thenReturn(Optional.empty());
+
+        // ACT + ASSERT
+
+        assertThrows(
+                RoomNotFoundException.class,
+                () -> roomService.deleteRoom(roomId)
+        );
+
+        // VERIFY
+
+        verify(roomRepository, never()).delete(any(Room.class));
     }
 
 }
