@@ -4,6 +4,7 @@ import com.project.hotel.controller.RoomType;
 import com.project.hotel.dto.RoomRequestDTO;
 import com.project.hotel.dto.RoomResponseDTO;
 import com.project.hotel.entity.Room;
+import com.project.hotel.exception.InvalidRoomTypeException;
 import com.project.hotel.exception.RoomAlreadyExistsException;
 import com.project.hotel.repository.RoomRepository;
 import org.junit.jupiter.api.Test;
@@ -85,4 +86,28 @@ class RoomServiceTest {
 
         verify(roomRepository, times(1)).save(any(Room.class));
     }
+
+    @Test
+    void createRoom_shouldThrowException_whenRoomTypeIsInvalid() {
+
+        // ARRANGE
+        RoomRequestDTO dto = new RoomRequestDTO();
+        dto.setRoomNumber("103");
+        dto.setType("KING"); // invalid type
+        dto.setPrice(3000);
+
+        when(roomRepository.existsByRoomNumber("103"))
+                .thenReturn(false);
+
+        // ACT + ASSERT
+        assertThrows(
+                InvalidRoomTypeException.class,
+                () -> roomService.createRoom(dto)
+        );
+
+        // VERIFY
+        verify(roomRepository, never()).save(any());
+    }
+
+
 }
