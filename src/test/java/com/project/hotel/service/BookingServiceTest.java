@@ -167,4 +167,40 @@ public class BookingServiceTest {
         verify(roomRepository, never()).findById(any());
         verify(bookingRepository, never()).save(any());
     }
+
+    @Test
+    void cancelBooking_shouldAllowOwner() {
+
+        // ARRANGE
+
+        String email = "dev@mail.com";
+
+        User user = new User();
+        user.setId(1L);
+        user.setEmail(email);
+        user.setRole(Role.USER);
+
+        Room room = new Room();
+        room.setId(1L);
+        room.setRoomNumber("101");
+
+        Booking booking = new Booking();
+        booking.setId(10L);
+        booking.setUser(user); // owner same user
+        booking.setRoom(room);
+
+        when(bookingRepository.findById(10L))
+                .thenReturn(Optional.of(booking));
+
+        when(userRepository.findByEmail(email))
+                .thenReturn(Optional.of(user));
+
+        // ACT
+
+        bookingService.cancelBooking(10L, email);
+
+        // ASSERT
+
+        verify(bookingRepository, times(1)).delete(booking);
+    }
 }
