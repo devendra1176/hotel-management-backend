@@ -5,6 +5,7 @@ import com.project.hotel.entity.User;
 import com.project.hotel.repository.UserRepository;
 import com.project.hotel.security.JwtUtil;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,7 +14,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
-@Tag(name = "Auth APIs", description = "Authentication and JWT token APIs")
+@Tag(name = "Auth APIs", description = "Authentication and JWT token generation APIs")
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
@@ -34,11 +35,15 @@ public class AuthController {
 
     @Operation(
             summary = "Login user",
-            description = "Authenticates user using email and password, then returns JWT token"
+            description = "Authenticates a user using email and password. If credentials are valid, returns a JWT token containing user email and role."
     )
     @PostMapping("/login")
-    public ApiResponse<String> login(@RequestParam String email,
-                                     @RequestParam String password) {
+    public ApiResponse<String> login(
+            @Parameter(description = "Registered user email", example = "admin@gmail.com")
+            @RequestParam String email,
+
+            @Parameter(description = "User password", example = "password123")
+            @RequestParam String password) {
 
         log.info("Login attempt started for email={}", email);
 

@@ -21,7 +21,7 @@ public class OpenApiConfig {
                         .description("Spring Boot Hotel Management Backend with JWT Security, Role-Based Authorization, Room Management, Booking System, Validation, Logging, and Pagination.")
                         .contact(new Contact()
                                 .name("Devendra")
-                                .email("your-email@example.com")
+                                .email("devendra1176sahu@gmail.com")
                         )
                 )
                 .components(new Components()
