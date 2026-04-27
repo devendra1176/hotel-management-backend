@@ -174,6 +174,7 @@ public class BookingService {
         BookingResponseDTO res = new BookingResponseDTO();
 
         res.setBookingId(booking.getId());
+        res.setUserName(booking.getUser().getName());
         res.setRoomNumber(booking.getRoom().getRoomNumber());
         res.setCheckIn(booking.getCheckIn().toString());
         res.setCheckOut(booking.getCheckOut().toString());

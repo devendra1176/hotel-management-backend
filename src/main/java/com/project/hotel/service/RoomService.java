@@ -156,6 +156,11 @@ public class RoomService {
 
         validateDateRange(checkIn, checkOut);
 
+        if (checkIn.isBefore(LocalDate.now())) {
+            log.warn("Advanced room search rejected: check-in in past, checkIn={}", checkIn);
+            throw new InvalidDateRangeException("Check-in cannot be in the past");
+        }
+
         RoomType type = null;
 
         if (typeStr != null && !typeStr.trim().isEmpty()) {

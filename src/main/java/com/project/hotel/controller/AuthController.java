@@ -53,8 +53,7 @@ public class AuthController {
             );
 
             User user = userRepository.findByEmail(email)
-                    .orElseThrow(() -> new RuntimeException("User not found"));
-
+                    .orElseThrow(() -> new BadCredentialsException("Invalid email or password"));
             String token = jwtUtil.generateToken(user.getEmail(), user.getRole().name());
 
             log.info("Login successful for email={}, role={}", email, user.getRole().name());
