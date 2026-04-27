@@ -518,18 +518,6 @@ http://localhost:9090/swagger-ui/index.html
 
 ---
 
-## Environment Variables for Deployment
-
-```text
-DB_URL=jdbc:postgresql://<host>:<port>/<database>
-DB_USERNAME=<database_username>
-DB_PASSWORD=<database_password>
-JWT_SECRET=<secure_jwt_secret>
-SPRING_PROFILES_ACTIVE=prod
-```
-
----
-
 ## Deployment
 
 This project is deployment-ready and can be deployed on platforms like:
