@@ -68,4 +68,50 @@ public class EmailService {
             throw ex;
         }
     }
+
+    public void sendBookingCancellationEmail(Booking booking) {
+
+        String toEmail = booking.getUser().getEmail();
+
+        log.info("Booking cancellation email sending started: bookingId={}, to={}",
+                booking.getId(), toEmail);
+
+        String subject = "Hotel Booking Cancelled";
+
+        String body =
+                "Hello " + booking.getUser().getName() + ",\n\n" +
+                        "Your hotel booking has been cancelled successfully.\n\n" +
+                        "Cancelled Booking Details:\n" +
+                        "Booking ID: " + booking.getId() + "\n" +
+                        "Room Number: " + booking.getRoom().getRoomNumber() + "\n" +
+                        "Check-in: " + booking.getCheckIn() + "\n" +
+                        "Check-out: " + booking.getCheckOut() + "\n\n" +
+                        "We hope to serve you again.\n\n" +
+                        "Regards,\n" +
+                        "Hotel Management Team";
+
+        SimpleMailMessage message = new SimpleMailMessage();
+
+        message.setFrom(fromEmail);
+        message.setTo(toEmail);
+        message.setSubject(subject);
+        message.setText(body);
+
+        try {
+
+            mailSender.send(message);
+
+            log.info("Booking cancellation email sent successfully: bookingId={}, to={}",
+                    booking.getId(), toEmail);
+
+        } catch (Exception ex) {
+
+            log.error("Failed to send booking cancellation email: bookingId={}, to={}, error={}",
+                    booking.getId(),
+                    toEmail,
+                    ex.getMessage());
+
+            throw ex;
+        }
+    }
 }

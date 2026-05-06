@@ -125,6 +125,8 @@ public class BookingService {
             throw new UnauthorizedBookingAccessException("You are not allowed to cancel this booking");
         }
 
+        emailService.sendBookingCancellationEmail(booking);
+
         bookingRepository.delete(booking);
 
         log.info("Booking cancelled successfully: bookingId={}, cancelledBy={}, role={}",
