@@ -28,6 +28,8 @@ public class UserController {
             summary = "Register new user",
             description = "Public API to create a new user account. Role is automatically assigned as USER."
     )
+    @SecurityRequirement(name = "bearerAuth")
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ApiResponse<UserResponseDTO> createUser(
             @Valid @RequestBody UserRequestDTO dto) {

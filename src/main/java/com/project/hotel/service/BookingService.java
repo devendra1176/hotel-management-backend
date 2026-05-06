@@ -25,12 +25,16 @@ public class BookingService {
     private final UserRepository userRepository;
     private final RoomRepository roomRepository;
 
+    private final EmailService emailService;
+
     public BookingService(BookingRepository bookingRepository,
                           UserRepository userRepository,
-                          RoomRepository roomRepository) {
+                          RoomRepository roomRepository,
+                          EmailService emailService) {
         this.bookingRepository = bookingRepository;
         this.userRepository = userRepository;
         this.roomRepository = roomRepository;
+        this.emailService = emailService;
     }
 
     public BookingResponseDTO createBooking(BookingRequestDTO dto, String email) {
@@ -82,6 +86,7 @@ public class BookingService {
         booking.setCheckOut(checkOut);
 
         Booking saved = bookingRepository.save(booking);
+        emailService.sendBookingConfirmationEmail(saved);
 
         log.info("Booking created successfully: bookingId={}, userId={}, email={}, roomId={}, roomNumber={}, checkIn={}, checkOut={}",
                 saved.getId(), user.getId(), email, room.getId(), room.getRoomNumber(), checkIn, checkOut);
