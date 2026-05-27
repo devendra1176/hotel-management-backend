@@ -39,11 +39,8 @@ RUN chown spring:spring app.jar
 # Switch to non-root user
 USER spring
 
-# Render provides PORT dynamically
-ENV PORT=9090
-
 # Expose container port
-EXPOSE 9090
+EXPOSE 8080
 
 # Run Spring Boot application
 ENTRYPOINT ["sh", "-c", "java -XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0 -Dserver.port=$PORT -jar app.jar"]
