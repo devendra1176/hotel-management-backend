@@ -13,7 +13,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-@Tag(name = "User APIs", description = "User management APIs (signup, fetch, delete)")
+@Tag(
+        name = "User APIs",
+        description = "User management APIs (create, fetch, delete)"
+)
 @RestController
 @RequestMapping("/users")
 public class UserController {
@@ -25,8 +28,8 @@ public class UserController {
     }
 
     @Operation(
-            summary = "Register new user",
-            description = "Public API to create a new user account. Role is automatically assigned as USER."
+            summary = "Create new user",
+            description = "ADMIN only API. Creates a new user account. Newly created users are automatically assigned the USER role."
     )
     @SecurityRequirement(name = "bearerAuth")
     @PreAuthorize("hasRole('ADMIN')")

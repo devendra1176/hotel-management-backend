@@ -1,7 +1,8 @@
 # Hotel Management System Backend
 
-A production-style **Hotel Management REST API** built with: **Spring Boot, Spring Security, JWT, JPA/Hibernate, PostgreSQL, Swagger, JUnit, and Mockito**.
+A production-oriented Hotel Management REST API built using Spring Boot and PostgreSQL, featuring JWT authentication, role-based authorization, room booking management, date-overlap validation, email notifications, and admin analytics.
 
+Designed to demonstrate real-world backend engineering practices including layered architecture, DTO-based APIs, centralized exception handling, validation, logging, testing, and secure authentication.
 > Backend system for:
 > - User authentication & JWT security
 > - Role-based access control (USER / ADMIN)
@@ -9,6 +10,15 @@ A production-style **Hotel Management REST API** built with: **Spring Boot, Spri
 > - Date-based room availability (overlap logic)
 > - Admin dashboard statistics
 
+---
+
+## Live Demo
+
+API Base URL:
+https://hotelmanagement.api.devendra.indevs.in/
+
+Swagger UI:
+https://hotelmanagement.api.devendra.indevs.in/swagger-ui/index.html
 
 ---
 
@@ -16,7 +26,7 @@ A production-style **Hotel Management REST API** built with: **Spring Boot, Spri
 
 The Hotel Management System is a backend REST API where:
 
-* Users can register and log in.
+* Administrators can create user accounts and users can log in using their assigned credentials.
 * Passwords are securely stored using BCrypt.
 * JWT tokens are generated after successful login.
 * APIs are protected using role-based authorization.
@@ -40,13 +50,30 @@ The Hotel Management System is a backend REST API where:
 - Clean global exception handling with proper HTTP status codes
 - Production-style logging
 - Unit and controller testing using JUnit and Mockito
+- Automated booking confirmation and cancellation emails
+- Admin dashboard statistics API
+
+---
+
+## Design Principles
+
+- Stateless JWT Authentication
+- Role-Based Access Control
+- DTO-Based API Design
+- Layered Architecture
+- Global Exception Handling
+- Date Overlap Booking Validation
+- Booking Ownership Control
+- Email Notification System
+- Pagination & Dynamic Filtering
+- Admin Analytics Dashboard
 
 ---
 
 ## Tech Stack
 
 | Layer         | Technology                   |
-| ------------- | ---------------------------- |
+|---------------|------------------------------|
 | Language      | Java                         |
 | Framework     | Spring Boot                  |
 | Security      | Spring Security, JWT, BCrypt |
@@ -54,9 +81,18 @@ The Hotel Management System is a backend REST API where:
 | ORM           | Spring Data JPA, Hibernate   |
 | API Style     | REST API                     |
 | Documentation | Swagger / OpenAPI            |
-| Testing       | JUnit 5, Mockito, MockMvc    |
 | Build Tool    | Maven                        |
 | Logging       | SLF4J                        |
+| Testing       | JUnit 5, Mockito, MockMvc    |
+| Email Service | Spring Mail                  |
+
+---
+
+## API Documentation
+
+![SwaggerScreenshot_1.png](docs/images/SwaggerScreenshot_1.png)
+![SwaggerScreenshot_2.png](docs/images/SwaggerScreenshot_2.png)
+![SwaggerScreenshot_3.png](docs/images/SwaggerScreenshot_3.png)
 
 ---
 
@@ -73,13 +109,19 @@ The Hotel Management System is a backend REST API where:
 * Booking APIs protected for authenticated users.
 * Clean handling of `401 Unauthorized` and `403 Forbidden` responses.
 
+### Email Notifications
+
+* Booking confirmation email sent automatically after successful booking.
+* Booking cancellation email sent automatically after cancellation.
+* Email delivery handled using Spring Mail.
+
 ### User Management
 
-* User registration.
+* ADMIN-controlled user creation.
 * BCrypt password hashing.
-* Default role assignment as `USER`.
-* Public API cannot create an `ADMIN` user.
-* Admin user is intended to be created through a controlled seeding strategy.
+* Newly created users are assigned the USER role by default.
+* Public users cannot create accounts directly.
+* ADMIN users manage user onboarding.
 * User listing and user lookup support.
 
 ### Room Management
@@ -90,6 +132,11 @@ The Hotel Management System is a backend REST API where:
 * Room type validation is handled using enum-based logic.
 * Rooms can be fetched with pagination and sorting.
 * Rooms can be searched dynamically using optional filters.
+
+* Supported Room Types:
+  - STANDARD
+  - DELUXE
+  - SUITE
 
 ### Booking Management
 
@@ -121,7 +168,7 @@ This allows the same room to be booked for different non-overlapping dates.
 Example:
 
 | Existing Booking | New Booking     | Result   |
-| ---------------- | --------------- | -------- |
+|------------------|-----------------|----------|
 | Apr 25 - Apr 27  | Apr 28 - Apr 30 | Allowed  |
 | Apr 25 - Apr 27  | Apr 26 - Apr 29 | Rejected |
 | Apr 25 - Apr 27  | Apr 24 - Apr 26 | Rejected |
@@ -262,14 +309,16 @@ Example error response:
 ### Auth APIs
 
 | Method | Endpoint      | Access | Description                 |
-| ------ | ------------- | ------ | --------------------------- |
+|--------|---------------|--------|-----------------------------|
 | POST   | `/auth/login` | Public | Login and receive JWT token |
 
 ### User APIs
 
+> User accounts are created and managed by administrators. Self-registration is not supported in this system.
+
 | Method | Endpoint      | Access | Description         |
-| ------ | ------------- | ------ | ------------------- |
-| POST   | `/users`      | Public | Register new user   |
+|--------|---------------|--------|---------------------|
+| POST   | `/users`      | Admin  | Create user account |
 | GET    | `/users`      | Admin  | Get paginated users |
 | GET    | `/users/{id}` | Admin  | Get user by ID      |
 | DELETE | `/users/{id}` | Admin  | Delete user         |
@@ -277,7 +326,7 @@ Example error response:
 ### Room APIs
 
 | Method | Endpoint                 | Access      | Description                                   |
-| ------ | ------------------------ | ----------- | --------------------------------------------- |
+|--------|--------------------------|-------------|-----------------------------------------------|
 | POST   | `/rooms`                 | Admin       | Create room                                   |
 | GET    | `/rooms`                 | User/Admin  | Get paginated rooms                           |
 | DELETE | `/rooms/{id}`            | Admin       | Delete room                                   |
@@ -289,7 +338,7 @@ Example error response:
 ### Booking APIs
 
 | Method | Endpoint         | Access      | Description                          |
-| ------ | ---------------- | ----------- | ------------------------------------ |
+|--------|------------------|-------------|--------------------------------------|
 | POST   | `/bookings`      | User/Admin  | Create booking                       |
 | DELETE | `/bookings/{id}` | Owner/Admin | Cancel booking                       |
 | GET    | `/bookings/my`   | User/Admin  | Get logged-in user's booking history |
@@ -298,7 +347,7 @@ Example error response:
 ### Admin APIs
 
 | Method | Endpoint       | Access | Description              |
-| ------ | -------------- | ------ | ------------------------ |
+|--------|----------------|--------|--------------------------|
 | GET    | `/admin/stats` | Admin  | Get dashboard statistics |
 
 ---
@@ -396,7 +445,7 @@ The project uses SLF4J logging for important application events.
 Logging strategy:
 
 | Level | Usage                                                 |
-| ----- | ----------------------------------------------------- |
+|-------|-------------------------------------------------------|
 | INFO  | Successful business operations                        |
 | WARN  | Invalid input, unauthorized access, failed operations |
 | DEBUG | JWT/security internals                                |
@@ -515,26 +564,6 @@ mvn spring-boot:run
 ```text
 http://localhost:9090/swagger-ui/index.html
 ```
-
----
-
-## Deployment
-
-This project is deployment-ready and can be deployed on platforms like:
-
-- Render
-- Railway
-- AWS
-
-**Live API (coming soon)**
-
-Environment variables required:
-
-- DB_URL
-- DB_USERNAME
-- DB_PASSWORD
-- JWT_SECRET
-
 ---
 
 ## Future Improvements
@@ -542,7 +571,6 @@ Environment variables required:
 Planned improvements:
 
 * Refresh token support
-* Email confirmation
 * Payment module
 * Review and rating module
 * Docker support
@@ -580,13 +608,15 @@ This project demonstrates:
 
 ```text
 Core Backend Features: Completed
-Security: Completed
-Booking Logic: Completed
-Testing: Completed
+JWT Security: Completed
+Role-Based Authorization: Completed
+Booking Management: Completed
+Date Overlap Validation: Completed
+Email Notifications: Completed
+Admin Dashboard: Completed
 Swagger Documentation: Completed
-Cleanup Phase: Completed
+Deployment: Completed
 README: Completed
-Deployment: Pending
 ```
 
 ---
@@ -595,4 +625,4 @@ Deployment: Pending
 
 **Devendra**
 
-Aspiring Java Backend Developer focused on building secure, production-style backend systems using Java, Spring Boot, PostgreSQL, and REST API architecture.
+Java Backend Developer focused on building secure, scalable, and production-oriented backend applications using Java, Spring Boot, PostgreSQL, REST APIs, and modern software engineering practices.
